@@ -51,17 +51,11 @@ const Calculator = () => {
 
   const calculate = (first: number, second: number, op: string): number | string => {
     switch (op) {
-      case "+":
-        return first + second;
-      case "-":
-        return first - second;
-      case "*":
-        return first * second;
-      case "/":
-        if (second === 0) return "Error";
-        return first / second;
-      default:
-        return second;
+      case "+": return first + second;
+      case "-": return first - second;
+      case "*": return first * second;
+      case "/": if (second === 0) return "Error"; return first / second;
+      default: return second;
     }
   };
 
@@ -84,6 +78,7 @@ const Calculator = () => {
     setFirstOperand(null);
     setOperator(null);
     setWaitingForSecondOperand(false);
+    setHistory([]);
   };
 
   const toggleSign = () => {
@@ -96,6 +91,23 @@ const Calculator = () => {
     const currentValue = parseFloat(displayValue);
     setDisplayValue(String(currentValue / 100));
   };
+
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key >= '0' && event.key <= '9') inputDigit(event.key);
+      if (event.key === '.') inputDecimal();
+      if (event.key === 'Enter' || event.key === '=') handleEquals();
+      if (event.key === 'Backspace') setDisplayValue(prev => prev.length > 1 ? prev.slice(0, -1) : '0');
+      if (event.key === 'Escape') clearAll();
+      if (event.key === '+') performOperation('+');
+      if (event.key === '-') performOperation('-');
+      if (event.key === '*') performOperation('*');
+      if (event.key === '/') performOperation('/');
+      if (event.key === '%') inputPercent();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [displayValue, firstOperand, operator, waitingForSecondOperand]);
 
   const buttonClasses = "text-xl h-14 transition-transform duration-150 ease-in-out hover:scale-105 active:scale-95";
 

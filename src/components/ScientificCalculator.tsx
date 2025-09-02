@@ -94,6 +94,23 @@ const ScientificCalculator = () => {
     setWaitingForSecondOperand(true);
   };
 
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key >= '0' && event.key <= '9') inputDigit(event.key);
+      if (event.key === '.') inputDecimal();
+      if (event.key === 'Enter' || event.key === '=') handleEquals();
+      if (event.key === 'Backspace') setDisplayValue(prev => prev.length > 1 ? prev.slice(0, -1) : '0');
+      if (event.key === 'Escape') clearAll();
+      if (event.key === '+') performOperation('+');
+      if (event.key === '-') performOperation('-');
+      if (event.key === '*') performOperation('*');
+      if (event.key === '/') performOperation('/');
+      if (event.key === '^') performOperation('^');
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [displayValue, firstOperand, operator, waitingForSecondOperand]);
+
   const buttonClasses = "text-lg h-12 transition-transform duration-150 ease-in-out hover:scale-105 active:scale-95";
 
   return (
