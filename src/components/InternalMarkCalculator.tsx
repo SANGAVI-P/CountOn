@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { PlusCircle, Trash2 } from "lucide-react";
+import { PlusCircle, Trash2, FileDown } from "lucide-react";
 import { toast } from "sonner";
 
 const assessmentSchema = z.object({
@@ -64,6 +64,30 @@ const InternalMarkCalculator = () => {
     toast.success("Calculation successful!");
   };
 
+  const handleExport = () => {
+    const values = form.getValues();
+    if (values.assessments.length === 0) {
+      toast.error("No data to export.");
+      return;
+    }
+
+    const headers = ["Assessment Name", "Obtained Marks", "Total Marks", "Weightage (%)"];
+    const rows = values.assessments.map(a => [a.name, a.obtained, a.total, a.weightage]);
+
+    let csvContent = "data:text/csv;charset=utf-8," 
+      + headers.join(",") + "\n" 
+      + rows.map(e => e.join(",")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "internal_marks.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("Data exported successfully!");
+  };
+
   return (
     <Card className="w-full max-w-md mx-auto shadow-lg bg-card/80 backdrop-blur-sm border-border/50">
       <CardHeader>
@@ -115,7 +139,12 @@ const InternalMarkCalculator = () => {
             </Button>
           </CardContent>
           <CardFooter className="flex flex-col gap-4 pt-4">
-            <Button type="submit" className="w-full">Calculate Final Mark</Button>
+            <div className="flex gap-2 w-full">
+              <Button type="submit" className="flex-grow">Calculate Final Mark</Button>
+              <Button type="button" variant="secondary" onClick={handleExport} title="Export to CSV">
+                <FileDown className="h-4 w-4" />
+              </Button>
+            </div>
             {finalMark !== null && (
               <div className="text-center text-xl font-bold p-4 bg-muted rounded-lg w-full">
                 <p>Final Internal Mark:</p>
