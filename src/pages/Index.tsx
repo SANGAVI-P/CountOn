@@ -3,7 +3,7 @@ import { MadeWithDyad } from "@/components/made-with-dyad";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <main className="flex-grow flex items-center justify-center">
         <Calculator />
       </main>
