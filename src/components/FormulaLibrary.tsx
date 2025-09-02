@@ -42,7 +42,7 @@ const useFormulas = () => {
   return { formulas, addFormula, removeFormula };
 };
 
-const FormulaCalculator: React.FC<{ formula: Formula }> = ({ formula }) => {
+function FormulaCalculator({ formula }: { formula: Formula }) {
   const [result, setResult] = React.useState<string | null>(null);
   const variables = formula.variables.split(',').map(v => v.trim()).filter(Boolean);
 
@@ -93,8 +93,7 @@ const FormulaCalculator: React.FC<{ formula: Formula }> = ({ formula }) => {
       )}
     </form>
   );
-};
-
+}
 
 const FormulaLibrary = () => {
   const { formulas, addFormula, removeFormula } = useFormulas();
