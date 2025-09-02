@@ -9,6 +9,7 @@ const Calculator = () => {
   const [waitingForSecondOperand, setWaitingForSecondOperand] = React.useState(false);
 
   const inputDigit = (digit: string) => {
+    if (displayValue === "Error") return;
     if (waitingForSecondOperand) {
       setDisplayValue(digit);
       setWaitingForSecondOperand(false);
@@ -18,6 +19,7 @@ const Calculator = () => {
   };
 
   const inputDecimal = () => {
+    if (displayValue === "Error") return;
     if (waitingForSecondOperand) {
       setDisplayValue("0.");
       setWaitingForSecondOperand(false);
@@ -29,6 +31,7 @@ const Calculator = () => {
   };
 
   const performOperation = (nextOperator: string) => {
+    if (displayValue === "Error") return;
     const inputValue = parseFloat(displayValue);
 
     if (firstOperand === null) {
@@ -61,6 +64,7 @@ const Calculator = () => {
   };
 
   const handleEquals = () => {
+    if (displayValue === "Error") return;
     const inputValue = parseFloat(displayValue);
     if (operator && firstOperand !== null) {
       const result = calculate(firstOperand, inputValue, operator);
