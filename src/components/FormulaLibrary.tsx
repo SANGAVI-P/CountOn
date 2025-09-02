@@ -43,10 +43,8 @@ const useFormulas = () => {
 };
 
 const FormulaCalculator: React.FC<{ formula: Formula }> = ({ formula }) => {
-  const [result, setResult] = React.useState<number | null>(null);
-  const variables = formula.variables.split(',').map(v => v.trim());
-  
-  const initialValues = variables.reduce((acc, v) => ({ ...acc, [v]: '' }), {});
+  const [result, setResult] = React.useState<string | null>(null);
+  const variables = formula.variables.split(',').map(v => v.trim()).filter(Boolean);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -59,14 +57,16 @@ const FormulaCalculator: React.FC<{ formula: Formula }> = ({ formula }) => {
         if (value === null || value.trim() === '') {
           throw new Error(`Variable '${v}' cannot be empty.`);
         }
-        scope[v] = parseFloat(value);
-        if (isNaN(scope[v])) {
+        const parsedValue = parseFloat(value);
+        if (isNaN(parsedValue)) {
           throw new Error(`Invalid number for variable '${v}'.`);
         }
+        scope[v] = parsedValue;
       });
       
       const calculatedResult = math.evaluate(formula.expression, scope);
-      setResult(calculatedResult);
+      const formattedResult = math.format(calculatedResult, { precision: 14 });
+      setResult(formattedResult);
       toast.success("Calculation successful!");
     } catch (error: any) {
       toast.error(error.message || "Calculation failed.");
@@ -80,7 +80,7 @@ const FormulaCalculator: React.FC<{ formula: Formula }> = ({ formula }) => {
         {variables.map(variable => (
           <div key={variable}>
             <label htmlFor={variable} className="block text-sm font-medium mb-1">{variable}</label>
-            <Input id={variable} name={variable} type="number" step="any" required />
+            <Input id={variable} name={variable} type="number" step="any" required placeholder={`Value for ${variable}`} />
           </div>
         ))}
       </div>
@@ -88,7 +88,7 @@ const FormulaCalculator: React.FC<{ formula: Formula }> = ({ formula }) => {
       {result !== null && (
         <div className="text-center text-xl font-bold p-4 bg-muted rounded-lg w-full">
           <p>Result:</p>
-          <p className="text-3xl text-primary">{result.toPrecision(4)}</p>
+          <p className="text-3xl text-primary break-all">{result}</p>
         </div>
       )}
     </form>
@@ -147,7 +147,7 @@ const FormulaLibrary = () => {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Add a New Formula</DialogTitle>
-            </DialogHeader>
+            </Header>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField control={form.control} name="name" render={({ field }) => (
@@ -160,7 +160,7 @@ const FormulaLibrary = () => {
                 <FormField control={form.control} name="expression" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Expression</FormLabel>
-                    <FormControl><Input placeholder="e.g., PI * r^2" {...field} /></FormControl>
+                    <FormControl><Input placeholder="e.g., pi * r^2" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
