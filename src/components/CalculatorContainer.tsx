@@ -13,16 +13,16 @@ const CalculatorContainer = () => {
         <TabsTrigger value="marks">Internal Marks</TabsTrigger>
         <TabsTrigger value="formulas">Formulas</TabsTrigger>
       </TabsList>
-      <TabsContent value="normal" className="mt-4 animate-fade-in">
+      <TabsContent value="normal" className="mt-4">
         <Calculator />
       </TabsContent>
-      <TabsContent value="scientific" className="mt-4 animate-fade-in">
+      <TabsContent value="scientific" className="mt-4">
         <ScientificCalculator />
       </TabsContent>
-      <TabsContent value="marks" className="mt-4 animate-fade-in">
+      <TabsContent value="marks" className="mt-4">
         <InternalMarkCalculator />
       </TabsContent>
-      <TabsContent value="formulas" className="mt-4 animate-fade-in">
+      <TabsContent value="formulas" className="mt-4">
         <FormulaLibrary />
       </TabsContent>
     </Tabs>

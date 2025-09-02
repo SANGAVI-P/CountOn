@@ -112,7 +112,7 @@ const Calculator = () => {
   const buttonClasses = "text-xl h-14 transition-transform duration-150 ease-in-out hover:scale-105 active:scale-95";
 
   return (
-    <Card className="w-full max-w-xs mx-auto shadow-lg bg-card/80 backdrop-blur-sm border-border/50">
+    <Card className="w-full max-w-xs mx-auto shadow-lg animate-pop-in bg-card/80 backdrop-blur-sm border-border/50">
       <CardHeader>
         <CardTitle className="text-center">AI Calculator</CardTitle>
       </CardHeader>
