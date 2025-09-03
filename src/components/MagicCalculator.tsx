@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { History, Sigma, Calculator, LineChart, Trash2 } from "lucide-react";
+import { History, Sigma, Calculator, LineChart } from "lucide-react";
 import { create, all } from 'mathjs';
 import Confetti from 'react-confetti';
 import useWindowSize from '@/hooks/useWindowSize';
@@ -17,7 +17,6 @@ import ScientificKeypad from "./ScientificKeypad";
 import NumericKeypad from "./NumericKeypad";
 import { useIsMobile } from "@/hooks/use-mobile";
 import GraphingView from "./GraphingView";
-import { toast } from "sonner"; // Import toast for success message
 
 const math = create(all);
 
@@ -128,7 +127,6 @@ const MagicCalculator = () => {
 
   const clearHistory = () => {
     setHistory([]);
-    toast.success("Calculation history has been cleared.");
   };
 
   const handleKeyPress = (key: string) => {
@@ -176,7 +174,7 @@ const MagicCalculator = () => {
     <>
       {showConfetti && <Confetti width={width} height={height} recycle={false} />}
       <Card className="w-full max-w-4xl mx-auto shadow-lg bg-card/80 backdrop-blur-sm border-border/50 animate-pop-in relative">
-        <SettingsDialog settings={settings} onSettingsChange={setSettings} />
+        <SettingsDialog settings={settings} onSettingsChange={setSettings} onClearHistory={clearHistory} />
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2">
             <Sigma className="h-6 w-6" />
@@ -231,18 +229,10 @@ const MagicCalculator = () => {
               )}
 
               <div className="mt-6 flex-grow flex flex-col">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="flex items-center gap-2 text-lg font-semibold">
-                    <History className="h-5 w-5" />
-                    History
-                  </h3>
-                  {history.length > 0 && (
-                    <Button variant="ghost" size="sm" onClick={clearHistory} className="text-destructive hover:bg-destructive/10">
-                      <Trash2 className="h-4 w-4 mr-1" />
-                      Clear
-                    </Button>
-                  )}
-                </div>
+                <h3 className="flex items-center gap-2 text-lg font-semibold mb-2">
+                  <History className="h-5 w-5" />
+                  History
+                </h3>
                 <ScrollArea className="h-40 w-full rounded-md border p-4">
                   {history.length === 0 ? (
                     <p className="text-center text-muted-foreground">Your calculation history will appear here.</p>
