@@ -4,14 +4,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Settings } from "lucide-react";
-import { toast } from "sonner";
 
 type Settings = {
   precision: number;
@@ -20,15 +18,9 @@ type Settings = {
 type SettingsDialogProps = {
   settings: Settings;
   onSettingsChange: (newSettings: Settings) => void;
-  onClearHistory: () => void;
 };
 
-const SettingsDialog = ({ settings, onSettingsChange, onClearHistory }: SettingsDialogProps) => {
-  const handleClearHistory = () => {
-    onClearHistory();
-    toast.success("Calculation history has been cleared.");
-  };
-
+const SettingsDialog = ({ settings, onSettingsChange }: SettingsDialogProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -53,11 +45,6 @@ const SettingsDialog = ({ settings, onSettingsChange, onClearHistory }: Settings
               value={[settings.precision]}
               onValueChange={(value) => onSettingsChange({ ...settings, precision: value[0] })}
             />
-          </div>
-          <div>
-            <Button variant="destructive" onClick={handleClearHistory} className="w-full">
-              Clear History
-            </Button>
           </div>
         </div>
       </DialogContent>
