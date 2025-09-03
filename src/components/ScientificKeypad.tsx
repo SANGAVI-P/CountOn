@@ -13,19 +13,17 @@ const scientificKeys = [
   { display: "√", value: "sqrt()" },
   { display: "x²", value: "^2" },
   { display: "xʸ", value: "^" },
-  { display: "(", value: "(" },
-  { display: ")", value: ")" },
   { display: "π", value: "pi" },
   { display: "e", value: "e" },
 ];
 
 const ScientificKeypad = ({ onKeyPress }: ScientificKeypadProps) => {
   return (
-    <div className="grid grid-cols-4 gap-2">
+    <div className="grid grid-cols-5 gap-2">
       {scientificKeys.map((key) => (
         <Button
           key={key.display}
-          variant="outline"
+          variant="secondary"
           className="text-lg h-12"
           onClick={() => onKeyPress(key.value)}
         >

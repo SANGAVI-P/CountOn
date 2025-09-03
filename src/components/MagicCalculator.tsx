@@ -14,6 +14,7 @@ import useWindowSize from '@/hooks/useWindowSize';
 import SettingsDialog from "./SettingsDialog";
 import SuggestionChips from "./SuggestionChips";
 import ScientificKeypad from "./ScientificKeypad";
+import NumericKeypad from "./NumericKeypad";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const math = create(all);
@@ -109,9 +110,20 @@ const MagicCalculator = () => {
     setHistory([]);
   };
 
-  const handleScientificKeyPress = (key: string) => {
+  const handleKeyPress = (key: string) => {
     const input = inputRef.current;
     if (!input) return;
+
+    if (key === '=') {
+      form.handleSubmit(onSubmit)();
+      return;
+    }
+
+    if (key === 'C') {
+      form.setValue("expression", "", { shouldValidate: true });
+      setResult(null);
+      return;
+    }
 
     const currentExpression = form.getValues("expression") || "";
     const selectionStart = input.selectionStart ?? currentExpression.length;
@@ -148,7 +160,7 @@ const MagicCalculator = () => {
             <Wand2 className="h-6 w-6" />
             <CardTitle>Magic Calculator</CardTitle>
           </div>
-          <CardDescription>Use natural language or the scientific keypad for your calculations.</CardDescription>
+          <CardDescription>Use natural language or the keypad for your calculations.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col md:flex-row gap-8">
@@ -216,17 +228,18 @@ const MagicCalculator = () => {
               </div>
             </div>
 
-            {/* Right Column: Scientific Keypad */}
+            {/* Right Column: Keypads */}
             <div className="md:w-1/2">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Scientific Keypad</h3>
+                <h3 className="text-lg font-semibold">Keypad</h3>
                 <Button variant="ghost" size="icon" onClick={() => setShowKeypad(!showKeypad)} className="md:hidden">
                   <Calculator className="h-5 w-5" />
                 </Button>
               </div>
               {(showKeypad || !isMobile) && (
-                <div className="animate-accordion-down">
-                  <ScientificKeypad onKeyPress={handleScientificKeyPress} />
+                <div className="animate-accordion-down space-y-4">
+                  <ScientificKeypad onKeyPress={handleKeyPress} />
+                  <NumericKeypad onKeyPress={handleKeyPress} />
                 </div>
               )}
             </div>
