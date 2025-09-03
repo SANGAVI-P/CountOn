@@ -15,6 +15,7 @@ const scientificKeys = [
   { display: "xʸ", value: "^" },
   { display: "π", value: "pi" },
   { display: "e", value: "e" },
+  { display: "x", value: "x" },
 ];
 
 const ScientificKeypad = ({ onKeyPress }: ScientificKeypadProps) => {

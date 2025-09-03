@@ -7,10 +7,10 @@ type SuggestionChipsProps = {
 const suggestions = [
   "sqrt(144) + 2^3",
   "15% of 300",
-  "5 feet to cm",
+  "sin(x)",
   "cos(45 deg)",
   "1 BTC in USD",
-  "1998-03-24 to days",
+  "x^2 - 2",
 ];
 
 const SuggestionChips = ({ onSelectSuggestion }: SuggestionChipsProps) => {

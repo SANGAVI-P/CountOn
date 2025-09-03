@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { History, Wand2, Calculator } from "lucide-react";
+import { History, Wand2, Calculator, LineChart } from "lucide-react";
 import { create, all } from 'mathjs';
 import Confetti from 'react-confetti';
 import useWindowSize from '@/hooks/useWindowSize';
@@ -16,6 +16,7 @@ import SuggestionChips from "./SuggestionChips";
 import ScientificKeypad from "./ScientificKeypad";
 import NumericKeypad from "./NumericKeypad";
 import { useIsMobile } from "@/hooks/use-mobile";
+import GraphingView from "./GraphingView";
 
 const math = create(all);
 
@@ -42,6 +43,7 @@ const easterEggs: { [key: string]: string } = {
 
 const MagicCalculator = () => {
   const [result, setResult] = React.useState<string | null>(null);
+  const [graphFunction, setGraphFunction] = React.useState<string | null>(null);
   const [history, setHistory] = React.useState<HistoryItem[]>(() => {
     const savedHistory = localStorage.getItem("calcHistory");
     return savedHistory ? JSON.parse(savedHistory) : [];
@@ -72,18 +74,34 @@ const MagicCalculator = () => {
   });
 
   const onSubmit = (values: FormValues) => {
-    const expression = values.expression.toLowerCase().trim();
-    
-    if (easterEggs[expression]) {
-      const easterEggResult = easterEggs[expression];
+    const expression = values.expression.trim();
+    const lowerCaseExpression = expression.toLowerCase();
+
+    setResult(null);
+    setGraphFunction(null);
+
+    if (easterEggs[lowerCaseExpression]) {
+      const easterEggResult = easterEggs[lowerCaseExpression];
       setResult(easterEggResult);
       setHistory([{ expression: values.expression, result: easterEggResult }, ...history].slice(0, 20));
       form.reset();
       return;
     }
 
+    if (lowerCaseExpression.includes('x') && !lowerCaseExpression.includes('matrix')) {
+       try {
+        math.parse(expression).compile().evaluate({ x: 1 });
+        setGraphFunction(expression);
+        setHistory([{ expression, result: "[Graph]" }, ...history].slice(0, 20));
+        form.reset();
+        return;
+      } catch (error) {
+        // Fall through to normal evaluation to show error
+      }
+    }
+
     try {
-      const calculatedResult = math.evaluate(values.expression);
+      const calculatedResult = math.evaluate(expression);
       if (typeof calculatedResult === 'function') {
         setResult("Please provide a full expression to calculate.");
         return;
@@ -122,6 +140,7 @@ const MagicCalculator = () => {
     if (key === 'C') {
       form.setValue("expression", "", { shouldValidate: true });
       setResult(null);
+      setGraphFunction(null);
       return;
     }
 
@@ -160,7 +179,7 @@ const MagicCalculator = () => {
             <Wand2 className="h-6 w-6" />
             <CardTitle>Magic Calculator</CardTitle>
           </div>
-          <CardDescription>Use natural language or the keypad for your calculations.</CardDescription>
+          <CardDescription>Enter a calculation, a function to graph, or a question.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col md:flex-row gap-8">
@@ -175,7 +194,7 @@ const MagicCalculator = () => {
                       <FormItem>
                         <FormControl>
                           <Input
-                            placeholder="Enter your calculation"
+                            placeholder="e.g., 15% of 300 or sin(x)"
                             {...field}
                             ref={(e) => {
                               field.ref(e);
@@ -195,6 +214,8 @@ const MagicCalculator = () => {
                   </Button>
                 </form>
               </Form>
+
+              {graphFunction && <GraphingView expression={graphFunction} />}
 
               {result && (
                 <div 
@@ -218,7 +239,7 @@ const MagicCalculator = () => {
                     <div className="space-y-2">
                       {history.map((item, index) => (
                         <div key={index} className="flex justify-between items-center">
-                          <span className="text-muted-foreground">{item.expression}</span>
+                          <span className="text-muted-foreground truncate pr-4" title={item.expression}>{item.expression}</span>
                           <span className="font-semibold">{item.result}</span>
                         </div>
                       ))}
