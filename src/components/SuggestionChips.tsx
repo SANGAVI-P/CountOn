@@ -9,7 +9,6 @@ const suggestions = [
   "15% of 300",
   "sin(x)",
   "cos(45 deg)",
-  "1 BTC in USD",
   "x^2 - 2",
 ];
 
