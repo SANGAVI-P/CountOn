@@ -7,12 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { History, Wand2 } from "lucide-react";
+import { History, Wand2, Calculator } from "lucide-react";
 import { create, all } from 'mathjs';
 import Confetti from 'react-confetti';
 import useWindowSize from '@/hooks/useWindowSize';
 import SettingsDialog from "./SettingsDialog";
 import SuggestionChips from "./SuggestionChips";
+import ScientificKeypad from "./ScientificKeypad";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const math = create(all);
 
@@ -49,6 +51,9 @@ const MagicCalculator = () => {
   });
   const [showConfetti, setShowConfetti] = React.useState(false);
   const { width, height } = useWindowSize();
+  const isMobile = useIsMobile();
+  const [showKeypad, setShowKeypad] = React.useState(false);
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   React.useEffect(() => {
     localStorage.setItem("calcHistory", JSON.stringify(history));
@@ -68,7 +73,6 @@ const MagicCalculator = () => {
   const onSubmit = (values: FormValues) => {
     const expression = values.expression.toLowerCase().trim();
     
-    // Check for Easter eggs
     if (easterEggs[expression]) {
       const easterEggResult = easterEggs[expression];
       setResult(easterEggResult);
@@ -87,9 +91,8 @@ const MagicCalculator = () => {
       setResult(formattedResult);
       setHistory([{ expression: values.expression, result: formattedResult }, ...history].slice(0, 20));
       
-      // Let's celebrate!
       setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 5000); // Confetti for 5 seconds
+      setTimeout(() => setShowConfetti(false), 5000);
 
       form.reset();
     } catch (error: any) {
@@ -106,74 +109,127 @@ const MagicCalculator = () => {
     setHistory([]);
   };
 
+  const handleScientificKeyPress = (key: string) => {
+    const input = inputRef.current;
+    if (!input) return;
+
+    const currentExpression = form.getValues("expression") || "";
+    const selectionStart = input.selectionStart ?? currentExpression.length;
+    const selectionEnd = input.selectionEnd ?? currentExpression.length;
+
+    let textToInsert = key;
+    let cursorOffset = key.length;
+
+    if (key.endsWith("()")) {
+      cursorOffset = key.length - 1;
+    }
+
+    const newExpression = 
+        currentExpression.substring(0, selectionStart) + 
+        textToInsert + 
+        currentExpression.substring(selectionEnd);
+
+    form.setValue("expression", newExpression, { shouldValidate: true });
+
+    setTimeout(() => {
+      input.focus();
+      const newCursorPos = selectionStart + cursorOffset;
+      input.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
   return (
     <>
       {showConfetti && <Confetti width={width} height={height} recycle={false} />}
-      <Card className="w-full max-w-lg mx-auto shadow-lg bg-card/80 backdrop-blur-sm border-border/50 animate-pop-in relative">
+      <Card className="w-full max-w-4xl mx-auto shadow-lg bg-card/80 backdrop-blur-sm border-border/50 animate-pop-in relative">
         <SettingsDialog settings={settings} onSettingsChange={setSettings} onClearHistory={clearHistory} />
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2">
             <Wand2 className="h-6 w-6" />
             <CardTitle>Magic Calculator</CardTitle>
           </div>
-          <CardDescription>Use natural language for calculations, conversions, and more.</CardDescription>
+          <CardDescription>Use natural language or the scientific keypad for your calculations.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="expression"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="e.g., (5 + 3) * 2, 10cm in inch, sin(45 deg)"
-                        {...field}
-                        className="text-lg h-12 text-center"
-                        autoComplete="off"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <SuggestionChips onSelectSuggestion={handleSelectSuggestion} />
-              <Button type="submit" className="w-full">
-                Calculate
-              </Button>
-            </form>
-          </Form>
+          <div className="flex flex-col md:flex-row gap-8">
+            {/* Left Column: Main Calculator */}
+            <div className="flex-grow md:w-1/2 flex flex-col">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="expression"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter your calculation"
+                            {...field}
+                            ref={(e) => {
+                              field.ref(e);
+                              inputRef.current = e;
+                            }}
+                            className="text-lg h-12 text-center"
+                            autoComplete="off"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <SuggestionChips onSelectSuggestion={handleSelectSuggestion} />
+                  <Button type="submit" className="w-full">
+                    Calculate
+                  </Button>
+                </form>
+              </Form>
 
-          {result && (
-            <div 
-              key={history[0]?.expression + history[0]?.result}
-              className="mt-6 text-center animate-pop-in"
-            >
-              <p className="text-muted-foreground">Result</p>
-              <p className="text-4xl font-bold break-all">{result}</p>
-            </div>
-          )}
-
-          <div className="mt-6">
-            <h3 className="flex items-center gap-2 text-lg font-semibold mb-2">
-              <History className="h-5 w-5" />
-              History
-            </h3>
-            <ScrollArea className="h-40 w-full rounded-md border p-4">
-              {history.length === 0 ? (
-                <p className="text-center text-muted-foreground">Your calculation history will appear here.</p>
-              ) : (
-                <div className="space-y-2">
-                  {history.map((item, index) => (
-                    <div key={index} className="flex justify-between items-center">
-                      <span className="text-muted-foreground">{item.expression}</span>
-                      <span className="font-semibold">{item.result}</span>
-                    </div>
-                  ))}
+              {result && (
+                <div 
+                  key={history[0]?.expression + history[0]?.result}
+                  className="mt-6 text-center animate-pop-in"
+                >
+                  <p className="text-muted-foreground">Result</p>
+                  <p className="text-4xl font-bold break-all">{result}</p>
                 </div>
               )}
-            </ScrollArea>
+
+              <div className="mt-6 flex-grow flex flex-col">
+                <h3 className="flex items-center gap-2 text-lg font-semibold mb-2">
+                  <History className="h-5 w-5" />
+                  History
+                </h3>
+                <ScrollArea className="h-40 w-full rounded-md border p-4">
+                  {history.length === 0 ? (
+                    <p className="text-center text-muted-foreground">Your calculation history will appear here.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {history.map((item, index) => (
+                        <div key={index} className="flex justify-between items-center">
+                          <span className="text-muted-foreground">{item.expression}</span>
+                          <span className="font-semibold">{item.result}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </ScrollArea>
+              </div>
+            </div>
+
+            {/* Right Column: Scientific Keypad */}
+            <div className="md:w-1/2">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Scientific Keypad</h3>
+                <Button variant="ghost" size="icon" onClick={() => setShowKeypad(!showKeypad)} className="md:hidden">
+                  <Calculator className="h-5 w-5" />
+                </Button>
+              </div>
+              {(showKeypad || !isMobile) && (
+                <div className="animate-accordion-down">
+                  <ScientificKeypad onKeyPress={handleScientificKeyPress} />
+                </div>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
