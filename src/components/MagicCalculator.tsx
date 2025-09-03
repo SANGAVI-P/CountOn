@@ -146,7 +146,10 @@ const MagicCalculator = () => {
           </Form>
 
           {result && (
-            <div className="mt-6 text-center">
+            <div 
+              key={history[0]?.expression + history[0]?.result}
+              className="mt-6 text-center animate-pop-in"
+            >
               <p className="text-muted-foreground">Result</p>
               <p className="text-4xl font-bold break-all">{result}</p>
             </div>
