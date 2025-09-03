@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { History, Wand2, Calculator, LineChart } from "lucide-react";
+import { History, Sigma, Calculator, LineChart } from "lucide-react";
 import { create, all } from 'mathjs';
 import Confetti from 'react-confetti';
 import useWindowSize from '@/hooks/useWindowSize';
@@ -176,8 +176,8 @@ const MagicCalculator = () => {
         <SettingsDialog settings={settings} onSettingsChange={setSettings} onClearHistory={clearHistory} />
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2">
-            <Wand2 className="h-6 w-6" />
-            <CardTitle>Magic Calculator</CardTitle>
+            <Sigma className="h-6 w-6" />
+            <CardTitle>CountOn</CardTitle>
           </div>
           <CardDescription>Enter a calculation, a function to graph, or a question.</CardDescription>
         </CardHeader>
