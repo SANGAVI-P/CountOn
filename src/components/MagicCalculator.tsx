@@ -9,6 +9,8 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { History, Wand2 } from "lucide-react";
 import { create, all } from 'mathjs';
+import SettingsDialog from "./SettingsDialog";
+import SuggestionChips from "./SuggestionChips";
 
 const math = create(all);
 
@@ -21,10 +23,28 @@ type HistoryItem = {
   expression: string;
   result: string;
 };
+type Settings = {
+  precision: number;
+};
 
 const MagicCalculator = () => {
   const [result, setResult] = React.useState<string | null>(null);
-  const [history, setHistory] = React.useState<HistoryItem[]>([]);
+  const [history, setHistory] = React.useState<HistoryItem[]>(() => {
+    const savedHistory = localStorage.getItem("calcHistory");
+    return savedHistory ? JSON.parse(savedHistory) : [];
+  });
+  const [settings, setSettings] = React.useState<Settings>(() => {
+    const savedSettings = localStorage.getItem("calcSettings");
+    return savedSettings ? JSON.parse(savedSettings) : { precision: 14 };
+  });
+
+  React.useEffect(() => {
+    localStorage.setItem("calcHistory", JSON.stringify(history));
+  }, [history]);
+
+  React.useEffect(() => {
+    localStorage.setItem("calcSettings", JSON.stringify(settings));
+  }, [settings]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -40,7 +60,7 @@ const MagicCalculator = () => {
         setResult("Please provide a full expression to calculate.");
         return;
       }
-      const formattedResult = math.format(calculatedResult, { precision: 14 });
+      const formattedResult = math.format(calculatedResult, { precision: settings.precision });
       setResult(formattedResult);
       setHistory([{ expression: values.expression, result: formattedResult }, ...history].slice(0, 20));
       form.reset();
@@ -49,8 +69,18 @@ const MagicCalculator = () => {
     }
   };
 
+  const handleSelectSuggestion = (suggestion: string) => {
+    form.setValue("expression", suggestion);
+    form.handleSubmit(onSubmit)();
+  };
+
+  const clearHistory = () => {
+    setHistory([]);
+  };
+
   return (
-    <Card className="w-full max-w-lg mx-auto shadow-lg bg-card/80 backdrop-blur-sm border-border/50 animate-pop-in">
+    <Card className="w-full max-w-lg mx-auto shadow-lg bg-card/80 backdrop-blur-sm border-border/50 animate-pop-in relative">
+      <SettingsDialog settings={settings} onSettingsChange={setSettings} onClearHistory={clearHistory} />
       <CardHeader className="text-center">
         <div className="flex items-center justify-center gap-2">
           <Wand2 className="h-6 w-6" />
@@ -78,6 +108,7 @@ const MagicCalculator = () => {
                 </FormItem>
               )}
             />
+            <SuggestionChips onSelectSuggestion={handleSelectSuggestion} />
             <Button type="submit" className="w-full">
               Calculate
             </Button>
