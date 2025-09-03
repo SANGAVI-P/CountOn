@@ -10,7 +10,7 @@ const scientificKeys = [
   { display: "tan", value: "tan()" },
   { display: "log", value: "log()" },
   { display: "ln", value: "ln()" },
-  { display: "√", value: "sqrt()" },
+  { display: "√", value: "√()" },
   { display: "x²", value: "^2" },
   { display: "xʸ", value: "^" },
   { display: "π", value: "pi" },

@@ -15,7 +15,8 @@ const GraphingView = ({ expression }: GraphingViewProps) => {
 
   React.useEffect(() => {
     try {
-      const node = math.parse(expression);
+      const processedExpression = expression.replace(/√/g, 'sqrt');
+      const node = math.parse(processedExpression);
       const code = node.compile();
       
       const points = [];

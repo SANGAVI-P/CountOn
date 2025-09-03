@@ -5,7 +5,7 @@ type SuggestionChipsProps = {
 };
 
 const suggestions = [
-  "sqrt(144) + 2^3",
+  "√(144) + 2^3",
   "15% of 300",
   "sin(x)",
   "cos(45 deg)",

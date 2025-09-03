@@ -74,8 +74,9 @@ const MagicCalculator = () => {
   });
 
   const onSubmit = (values: FormValues) => {
-    const expression = values.expression.trim();
-    const lowerCaseExpression = expression.toLowerCase();
+    const originalExpression = values.expression.trim();
+    const processedExpression = originalExpression.replace(/√/g, 'sqrt');
+    const lowerCaseExpression = processedExpression.toLowerCase();
 
     setResult(null);
     setGraphFunction(null);
@@ -83,16 +84,16 @@ const MagicCalculator = () => {
     if (easterEggs[lowerCaseExpression]) {
       const easterEggResult = easterEggs[lowerCaseExpression];
       setResult(easterEggResult);
-      setHistory([{ expression: values.expression, result: easterEggResult }, ...history].slice(0, 20));
+      setHistory([{ expression: originalExpression, result: easterEggResult }, ...history].slice(0, 20));
       form.reset();
       return;
     }
 
     if (lowerCaseExpression.includes('x') && !lowerCaseExpression.includes('matrix')) {
        try {
-        math.parse(expression).compile().evaluate({ x: 1 });
-        setGraphFunction(expression);
-        setHistory([{ expression, result: "[Graph]" }, ...history].slice(0, 20));
+        math.parse(processedExpression).compile().evaluate({ x: 1 });
+        setGraphFunction(originalExpression);
+        setHistory([{ expression: originalExpression, result: "[Graph]" }, ...history].slice(0, 20));
         form.reset();
         return;
       } catch (error) {
@@ -101,14 +102,14 @@ const MagicCalculator = () => {
     }
 
     try {
-      const calculatedResult = math.evaluate(expression);
+      const calculatedResult = math.evaluate(processedExpression);
       if (typeof calculatedResult === 'function') {
         setResult("Please provide a full expression to calculate.");
         return;
       }
       const formattedResult = math.format(calculatedResult, { precision: settings.precision });
       setResult(formattedResult);
-      setHistory([{ expression: values.expression, result: formattedResult }, ...history].slice(0, 20));
+      setHistory([{ expression: originalExpression, result: formattedResult }, ...history].slice(0, 20));
       
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 5000);
