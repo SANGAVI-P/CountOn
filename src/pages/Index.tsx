@@ -16,10 +16,10 @@ const Index = () => {
           Internal Marks
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="magic-calculator" className="mt-4">
+      <TabsContent value="magic-calculator" className="mt-4 animate-pop-in">
         <MagicCalculator />
       </TabsContent>
-      <TabsContent value="internal-marks" className="mt-4">
+      <TabsContent value="internal-marks" className="mt-4 animate-pop-in">
         <InternalMarkCalculator />
       </TabsContent>
     </Tabs>
