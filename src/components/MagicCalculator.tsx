@@ -9,6 +9,8 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { History, Wand2 } from "lucide-react";
 import { create, all } from 'mathjs';
+import Confetti from 'react-confetti';
+import useWindowSize from '@/hooks/useWindowSize';
 import SettingsDialog from "./SettingsDialog";
 import SuggestionChips from "./SuggestionChips";
 
@@ -27,6 +29,14 @@ type Settings = {
   precision: number;
 };
 
+const easterEggs: { [key: string]: string } = {
+  "what is the meaning of life": "42",
+  "hello": "Hello there!",
+  "tell me a joke": "Why don't scientists trust atoms? Because they make up everything!",
+  "magic": "✨ Abracadabra! ✨",
+  "dyad": "You're chatting with me right now!",
+};
+
 const MagicCalculator = () => {
   const [result, setResult] = React.useState<string | null>(null);
   const [history, setHistory] = React.useState<HistoryItem[]>(() => {
@@ -37,6 +47,8 @@ const MagicCalculator = () => {
     const savedSettings = localStorage.getItem("calcSettings");
     return savedSettings ? JSON.parse(savedSettings) : { precision: 14 };
   });
+  const [showConfetti, setShowConfetti] = React.useState(false);
+  const { width, height } = useWindowSize();
 
   React.useEffect(() => {
     localStorage.setItem("calcHistory", JSON.stringify(history));
@@ -54,6 +66,17 @@ const MagicCalculator = () => {
   });
 
   const onSubmit = (values: FormValues) => {
+    const expression = values.expression.toLowerCase().trim();
+    
+    // Check for Easter eggs
+    if (easterEggs[expression]) {
+      const easterEggResult = easterEggs[expression];
+      setResult(easterEggResult);
+      setHistory([{ expression: values.expression, result: easterEggResult }, ...history].slice(0, 20));
+      form.reset();
+      return;
+    }
+
     try {
       const calculatedResult = math.evaluate(values.expression);
       if (typeof calculatedResult === 'function') {
@@ -63,6 +86,11 @@ const MagicCalculator = () => {
       const formattedResult = math.format(calculatedResult, { precision: settings.precision });
       setResult(formattedResult);
       setHistory([{ expression: values.expression, result: formattedResult }, ...history].slice(0, 20));
+      
+      // Let's celebrate!
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 5000); // Confetti for 5 seconds
+
       form.reset();
     } catch (error: any) {
       setResult(`Error: ${error.message}`);
@@ -79,71 +107,74 @@ const MagicCalculator = () => {
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto shadow-lg bg-card/80 backdrop-blur-sm border-border/50 animate-pop-in relative">
-      <SettingsDialog settings={settings} onSettingsChange={setSettings} onClearHistory={clearHistory} />
-      <CardHeader className="text-center">
-        <div className="flex items-center justify-center gap-2">
-          <Wand2 className="h-6 w-6" />
-          <CardTitle>Magic Calculator</CardTitle>
-        </div>
-        <CardDescription>Use natural language for calculations, conversions, and more.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="expression"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      placeholder="e.g., (5 + 3) * 2, 10cm in inch, sin(45 deg)"
-                      {...field}
-                      className="text-lg h-12 text-center"
-                      autoComplete="off"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <SuggestionChips onSelectSuggestion={handleSelectSuggestion} />
-            <Button type="submit" className="w-full">
-              Calculate
-            </Button>
-          </form>
-        </Form>
-
-        {result && (
-          <div className="mt-6 text-center">
-            <p className="text-muted-foreground">Result</p>
-            <p className="text-4xl font-bold break-all">{result}</p>
+    <>
+      {showConfetti && <Confetti width={width} height={height} recycle={false} />}
+      <Card className="w-full max-w-lg mx-auto shadow-lg bg-card/80 backdrop-blur-sm border-border/50 animate-pop-in relative">
+        <SettingsDialog settings={settings} onSettingsChange={setSettings} onClearHistory={clearHistory} />
+        <CardHeader className="text-center">
+          <div className="flex items-center justify-center gap-2">
+            <Wand2 className="h-6 w-6" />
+            <CardTitle>Magic Calculator</CardTitle>
           </div>
-        )}
+          <CardDescription>Use natural language for calculations, conversions, and more.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="expression"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g., (5 + 3) * 2, 10cm in inch, sin(45 deg)"
+                        {...field}
+                        className="text-lg h-12 text-center"
+                        autoComplete="off"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <SuggestionChips onSelectSuggestion={handleSelectSuggestion} />
+              <Button type="submit" className="w-full">
+                Calculate
+              </Button>
+            </form>
+          </Form>
 
-        <div className="mt-6">
-          <h3 className="flex items-center gap-2 text-lg font-semibold mb-2">
-            <History className="h-5 w-5" />
-            History
-          </h3>
-          <ScrollArea className="h-40 w-full rounded-md border p-4">
-            {history.length === 0 ? (
-              <p className="text-center text-muted-foreground">Your calculation history will appear here.</p>
-            ) : (
-              <div className="space-y-2">
-                {history.map((item, index) => (
-                  <div key={index} className="flex justify-between items-center">
-                    <span className="text-muted-foreground">{item.expression}</span>
-                    <span className="font-semibold">{item.result}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </ScrollArea>
-        </div>
-      </CardContent>
-    </Card>
+          {result && (
+            <div className="mt-6 text-center">
+              <p className="text-muted-foreground">Result</p>
+              <p className="text-4xl font-bold break-all">{result}</p>
+            </div>
+          )}
+
+          <div className="mt-6">
+            <h3 className="flex items-center gap-2 text-lg font-semibold mb-2">
+              <History className="h-5 w-5" />
+              History
+            </h3>
+            <ScrollArea className="h-40 w-full rounded-md border p-4">
+              {history.length === 0 ? (
+                <p className="text-center text-muted-foreground">Your calculation history will appear here.</p>
+              ) : (
+                <div className="space-y-2">
+                  {history.map((item, index) => (
+                    <div key={index} className="flex justify-between items-center">
+                      <span className="text-muted-foreground">{item.expression}</span>
+                      <span className="font-semibold">{item.result}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </ScrollArea>
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 };
 
