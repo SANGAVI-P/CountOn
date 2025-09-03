@@ -1,4 +1,4 @@
-import CalculatorContainer from "@/components/CalculatorContainer";
+import MagicCalculator from "@/components/MagicCalculator";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Index = () => {
@@ -8,7 +8,7 @@ const Index = () => {
         <ThemeToggle />
       </div>
       <main className="flex-grow flex items-center justify-center w-full">
-        <CalculatorContainer />
+        <MagicCalculator />
       </main>
     </div>
   );
