@@ -62,9 +62,13 @@ const InternalMarkCalculator = () => {
       }
     }
 
+    // Ensure totalMarks and totalWeightage are finite numbers before calling toFixed
+    const finalTotalMarks = Number.isFinite(totalMarks) ? parseFloat(totalMarks.toFixed(2)) : 0;
+    const finalTotalWeightage = Number.isFinite(totalWeightage) ? parseFloat(totalWeightage.toFixed(2)) : 0;
+
     return {
-      totalMarks: parseFloat(totalMarks.toFixed(2)),
-      totalWeightage: parseFloat(totalWeightage.toFixed(2)),
+      totalMarks: finalTotalMarks,
+      totalWeightage: finalTotalWeightage,
     };
   }, [watchedAssessments]);
 
