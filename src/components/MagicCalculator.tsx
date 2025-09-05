@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { History, Calculator, Trash2 } from 'lucide-react';
+import { History, Sparkles, Trash2 } from 'lucide-react'; // Changed Calculator to Sparkles
 import { create, all } from 'mathjs';
 import Confetti from 'react-confetti';
 import useWindowSize from '@/hooks/useWindowSize';
@@ -178,7 +178,7 @@ const MagicCalculator = () => {
         <SettingsDialog settings={settings} onSettingsChange={setSettings} />
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2">
-            <Calculator className="h-6 w-6 text-blue-500 dark:text-blue-300" />
+            <Sparkles className="h-6 w-6 text-blue-500 dark:text-blue-300" /> {/* Changed to Sparkles */}
             <CardTitle>CountOn</CardTitle>
           </div>
           <CardDescription>Enter a calculation, a function to graph, or a question.</CardDescription>
@@ -210,7 +210,6 @@ const MagicCalculator = () => {
                       </FormItem>
                     )}
                   />
-                  {/* SuggestionChips component removed */}
                   <Button type="submit" className="w-full">
                     Calculate
                   </Button>
@@ -248,7 +247,7 @@ const MagicCalculator = () => {
                   ) : (
                     <div className="space-y-2">
                       {history.map((item, index) => (
-                        <div key={index} className="flex justify-between items-center">
+                        <div key={index} className="flex justify-between items-center animate-pop-in">
                           <span className="text-muted-foreground truncate pr-4" title={item.expression}>{item.expression}</span>
                           <span className="font-semibold">{item.result}</span>
                         </div>
@@ -264,7 +263,7 @@ const MagicCalculator = () => {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">Keypad</h3>
                 <Button variant="ghost" size="icon" onClick={() => setShowKeypad(!showKeypad)} className="md:hidden">
-                  <Calculator className="h-5 w-5" />
+                  <Sparkles className="h-5 w-5" /> {/* Changed to Sparkles */}
                 </Button>
               </div>
               {(showKeypad || !isMobile) && (
