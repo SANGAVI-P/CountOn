@@ -7,12 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { History, Calculator, Trash2 } from 'lucide-react'; // Removed Sigma
+import { History, Calculator, Trash2 } from 'lucide-react';
 import { create, all } from 'mathjs';
 import Confetti from 'react-confetti';
 import useWindowSize from '@/hooks/useWindowSize';
 import SettingsDialog from "./SettingsDialog";
-import SuggestionChips from "./SuggestionChips";
 import ScientificKeypad from "./ScientificKeypad";
 import NumericKeypad from "./NumericKeypad";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -179,7 +178,7 @@ const MagicCalculator = () => {
         <SettingsDialog settings={settings} onSettingsChange={setSettings} />
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2">
-            <Calculator className="h-6 w-6 text-blue-500 dark:text-blue-300" /> {/* Calculator icon with blue color */}
+            <Calculator className="h-6 w-6 text-blue-500 dark:text-blue-300" />
             <CardTitle>CountOn</CardTitle>
           </div>
           <CardDescription>Enter a calculation, a function to graph, or a question.</CardDescription>
@@ -211,7 +210,7 @@ const MagicCalculator = () => {
                       </FormItem>
                     )}
                   />
-                  <SuggestionChips onSelectSuggestion={handleSelectSuggestion} />
+                  {/* SuggestionChips component removed */}
                   <Button type="submit" className="w-full">
                     Calculate
                   </Button>
