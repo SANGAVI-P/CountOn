@@ -25,7 +25,7 @@ const ScientificKeypad = ({ onKeyPress }: ScientificKeypadProps) => {
         <Button
           key={key.display}
           variant="secondary"
-          className="text-lg h-12"
+          className="text-lg h-12 transition-transform duration-100 ease-out hover:scale-105 active:scale-95"
           onClick={() => onKeyPress(key.value)}
         >
           {key.display}
